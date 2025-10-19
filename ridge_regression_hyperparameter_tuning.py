@@ -16,6 +16,7 @@ mae_closed_form= np.mean(np.abs(errors_closed_form), axis= 0)
 errors_grad_descent= X_val @ W_grad_descent - t_val
 mse_grad_descent= np.mean(errors_grad_descent ** 2, axis= 0) 
 mae_grad_descent= np.mean(np.abs(errors_grad_descent), axis= 0)
+mean, std= data_preprocessing.get_pred_denorm_factors()
 print(mae_closed_form)
 print(mse_closed_form)
 print(mae_grad_descent)

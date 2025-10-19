@@ -26,6 +26,9 @@ x_test[:, 0]= 1
 y_mean= means[0]
 y_std= stds[0]
 
+t_training= (t_training - y_mean) / y_std
+t_validation= (t_validation - y_mean) / y_std
+
 def get_training_data():
     return x_training, t_training
 def get_validation_data():
