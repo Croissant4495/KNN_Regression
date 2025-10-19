@@ -1,26 +1,49 @@
 import numpy as np
 
-def closed_form_ridge_regression(X, t, lam):
-    I= np.identity(X.shape[1])
-    I[0,0]= 0
-    w= np.linalg.inv(X.T @ X + lam * I) @ (X.T @ t)
-    return w
+class RidgeRegressor:
+    def __init__(self, x, t, lam,M):
+        self.features = x
+        self.target = t
+        self.lambda_reg = lam
+        self.complexity = M
+        self.weights = np.zeros((self.complexity, 1))
+        self.noFeatures = self.features.shape[0]
+        self.noSamples = self.target.shape[0]
+    
+    def get_weights(self):
+        return self.weights
 
-def gradient_descent_ridge_regression(X, t, lam, learn_rate, tolerance= 1e-6, iterations= 10000):
-    n,d= X.shape
-    losses= []
-    w= np.zeros((d,1))
-    reg_factor= lam / n
-    for i in range(iterations):
-        error= X @ w - t
-        loss= (error**2).sum() / (2*n)
-        reg_loss= reg_factor/2 * (w[1:]**2).sum()
-        loss += reg_loss
-        losses.append(loss)
-        if i > 2 and abs(losses[-1] - losses[-2]) < tolerance and abs(losses[-2] - losses[-3]) < tolerance and abs(losses[-3] - losses[-4]) < tolerance:
-            break
+    def closed_form(self):
+        I= np.identity(self.features.shape[1])
+        I[0,0]= 0
+        self.weights = np.linalg.inv(self.features.T @ self.features + self.lambda_reg * I) @ (self.features.T @ self.target).reshape(-1,1)
+
+    def predict(self, x):
+        return np.dot(x, self.weights).reshape(-1, 1)
+
+    def calc_loss(self, x, t):
+        error = self.predict(x) - t
+        mse= (error**2).sum() / (2*self.noSamples)
+        mae = np.mean(np.abs(error))
+        return error, mse, mae
+
+    def reg_loss(self):
+        reg_loss = self.lambda_reg / (2 * self.noSamples) * (self.weights[1:] ** 2).sum()
+        return reg_loss
+
+    def gradient_descent(self, learn_rate, tolerance= 1e-6, iterations= 10000):
+        self.weights= np.zeros((self.complexity, 1))
+        losses= []
+        reg_factor= self.lambda_reg / self.noSamples
+        for i in range(iterations):
+            error, mse, mae = self.calc_loss(self.features, self.target)
+            reg_loss = self.reg_loss()
+            losses.append(mse + reg_loss)
+            if i > 1 and abs(losses[-1] - losses[-2]) < tolerance:
+                break
+
+            gradient= (self.features.T @ error) / self.noSamples + reg_factor * self.weights.reshape(-1, 1)
+            gradient[0, 0] -= reg_factor * self.weights[0]
+            self.weights -= learn_rate * gradient
         
-        gradient= (X.T @ error) / n + reg_factor * w
-        gradient[0,0] -= reg_factor * w[0,0]
-        w = w - learn_rate * gradient
-    return w
+        return self.weights
