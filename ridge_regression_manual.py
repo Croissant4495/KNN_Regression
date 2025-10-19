@@ -13,7 +13,7 @@ def gradient_descent_ridge_regression(X, t, lam, learn_rate, tolerance= 1e-6, it
     reg_factor= lam / n
     for i in range(iterations):
         error= X @ w - t
-        loss= (error**2).sum / 2*n
+        loss= (error**2).sum() / (2*n)
         reg_loss= reg_factor/2 * (w[1:]**2).sum()
         loss += reg_loss
         losses.append(loss)
@@ -23,4 +23,4 @@ def gradient_descent_ridge_regression(X, t, lam, learn_rate, tolerance= 1e-6, it
         gradient= (X.T @ error) / n + reg_factor * w
         gradient[0,0] -= reg_factor * w[0,0]
         w = w - learn_rate * gradient
-    return w, losses
+    return w
