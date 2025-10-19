@@ -23,3 +23,14 @@ t_validation= x_validation[:, 0]
 x_validation[: 0]= 1
 t_test= x_test[:, 0]
 x_test[:, 0]= 1
+y_mean= means[0]
+y_std= stds[0]
+
+def get_training_data():
+    return x_training, t_training
+def get_validation_data():
+    return x_validation, t_validation
+def get_test_data():
+    return x_test, t_test
+def get_pred_denorm_factors():
+    return y_mean, y_std
