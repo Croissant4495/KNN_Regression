@@ -14,14 +14,14 @@ x_test, x_validation= train_test_split(x_test, test_size= 0.5, random_state= 42)
 ## in each feature matrix
 means= x_training.mean(axis=0)
 stds= x_training.std(axis=0)
+t_training= x_training[:, 0].reshape(-1, 1)
+t_validation= x_validation[:, 0].reshape(-1, 1)
+t_test= x_test[:, 0].reshape(-1, 1)
 x_training= (x_training - means) / stds
 x_validation= (x_validation - means) / stds
 x_test= (x_test - means) / stds
-t_training= x_training[:, 0]
 x_training[:, 0]= 1
-t_validation= x_validation[:, 0]
-x_validation[: 0]= 1
-t_test= x_test[:, 0]
+x_validation[:, 0]= 1
 x_test[:, 0]= 1
 y_mean= means[0]
 y_std= stds[0]
